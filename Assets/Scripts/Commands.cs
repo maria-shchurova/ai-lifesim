@@ -1,4 +1,4 @@
-using OpenAI_API;
+﻿using OpenAI_API;
 using OpenAI_API.Chat;
 using OpenAI_API.Models;
 using System;
@@ -17,6 +17,7 @@ public class Commands : MonoBehaviour
     private List<ChatMessage> messages;
 
     public TMP_Text textField;
+    public TMP_Text logField;
     public TMP_InputField inputField;
     public Button okButton;
 
@@ -29,7 +30,13 @@ public class Commands : MonoBehaviour
     }
 
     static string WrapPrompt(string input)
-     => "Write a Unity script named 'Default' without commentaries and explanations. It must have a public static method 'Foo' for implementation of the following request:\n " + input;
+         => "Write a Unity script named 'Default' without commentaries and explanations\n" +
+
+        " - Don�t use GameObject.FindGameObjectsWithTag.\n" +
+
+        " - There is no selected object. Find game objects manually.\n" +
+
+        "It must have a public static method 'Foo' for implementation of the following request:\n " + input;
 
 
     private async void GenerateCode()
@@ -69,8 +76,10 @@ public class Commands : MonoBehaviour
         textField.text = string.Format("You: {0}\n\nChat: {1}", userMessage.Content, responseMessage.Content);
         Debug.Log("AI command script:" + responseMessage.Content);
 
+        var text = "";
+        logField.text = text;
 
-        var assembly = CompilerExample.Compile(responseMessage.Content);
+        var assembly = CompilerExample.Compile(responseMessage.Content, out text);
         var method = assembly.GetType("Default").GetMethod("Foo");
         var del = (Action)Delegate.CreateDelegate(typeof(Action), method);
         del.Invoke();

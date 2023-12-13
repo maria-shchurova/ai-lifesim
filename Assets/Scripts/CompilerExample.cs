@@ -12,23 +12,32 @@ public class CompilerExample : MonoBehaviour
     void Start()
     {
         var assembly = Compile(@"
-      using UnityEngine;
 
-      public class Test
-      {
-      public static void Foo()
-      {
-      Debug.Log(""Hello, World!"");
-      }
-    }");
+          using UnityEngine;
+
+          public class Test
+
+          {
+
+          public static void Foo()
+
+          {
+
+          Debug.Log(""Hello, World!"");
+
+          }
+    
+
+        }", out var text);
 
         var method = assembly.GetType("Test").GetMethod("Foo");
         var del = (Action)Delegate.CreateDelegate(typeof(Action), method);
         del.Invoke();
     }
 
-    public static Assembly Compile(string source)
+    public static Assembly Compile(string source, out string log)
     {
+
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
         var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
@@ -42,21 +51,25 @@ public class CompilerExample : MonoBehaviour
         using (var ms = new System.IO.MemoryStream())
         {
             var result = compilation.Emit(ms);
-
             if (!result.Success)
             {
                 var errors = GetErrors(result.Diagnostics);
-
                 var msg = new StringBuilder();
                 foreach (var error in errors)
                 {
                     msg.AppendFormat("Error ({0}): {1}\n", error.Id, error.GetMessage());
                 }
+
+                log = msg.ToString();
+
                 throw new Exception(msg.ToString());
             }
 
+            log = "";
             ms.Seek(0, System.IO.SeekOrigin.Begin);
+
             return Assembly.Load(ms.ToArray());
+
         }
     }
 
@@ -70,19 +83,25 @@ public class CompilerExample : MonoBehaviour
                 errors.Add(diagnostic);
             }
         }
+
         return errors;
     }
-
 
     private static MetadataReference[] GetAssemblyReferences()
     {
         var references = new[]
         {
-        MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-        MetadataReference.CreateFromFile(typeof(UnityEngine.Debug).Assembly.Location),
-        // Add more references as needed
-    };
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(ValueType).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Rigidbody).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(GameObject).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Debug).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(UnityEngine.Object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Enum).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location)
+        };
 
         return references;
     }
 }
+

@@ -19,7 +19,15 @@ public class TestsAI : MonoBehaviour
 
     void Start()
     {
-        api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
+        if (Constants.api_key.Length > 1)
+        {
+            api = new OpenAIAPI(new APIAuthentication(Constants.api_key));
+        }
+        else
+        {
+            api = new OpenAIAPI(new APIAuthentication("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"));
+            //StartCoroutine(GetKeyFromServer()); //pull from github
+        }
         StartConversation();
         okButton.onClick.AddListener(() => WriteStory());
         Debug.Log("start !");

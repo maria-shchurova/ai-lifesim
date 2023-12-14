@@ -1,4 +1,4 @@
-ï»¿using OpenAI_API;
+using OpenAI_API;
 using OpenAI_API.Chat;
 using OpenAI_API.Models;
 using System;
@@ -6,10 +6,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Reflection;
-using UnityEditor;
-using System.Threading.Tasks;
-using System.Threading;
 
 public class Commands : MonoBehaviour
 {
@@ -21,21 +17,19 @@ public class Commands : MonoBehaviour
     public TMP_InputField inputField;
     public Button okButton;
 
-
+    public TMP_InputField APIkey_InputField;
     void Start()
     {
         api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
+        //api = new OpenAIAPI(Constants.api_key);
         messages = new List<ChatMessage>();
         okButton.onClick.AddListener(() => GenerateCode());
     }
 
     static string WrapPrompt(string input)
-         => "Write a Unity script named 'Default' without commentaries and explanations\n" +
-
-        " - Donï¿½t use GameObject.FindGameObjectsWithTag.\n" +
-
+     => "Write a Unity script named 'Default' without commentaries and explanations\n" +
+        " - Don’t use GameObject.FindGameObjectsWithTag.\n" +
         " - There is no selected object. Find game objects manually.\n" +
-
         "It must have a public static method 'Foo' for implementation of the following request:\n " + input;
 
 
@@ -86,7 +80,10 @@ public class Commands : MonoBehaviour
 
         // Re-enable the OK button
         okButton.enabled = true;
+        
     }
+
+        
 
 }
 

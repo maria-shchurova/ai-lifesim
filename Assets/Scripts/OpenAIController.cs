@@ -21,6 +21,14 @@ public class OpenAIController : MonoBehaviour
     void Start()
     {
         // This line gets your API key (and could be slightly different on Mac/Linux)
+        //if (Constants.api_key.Length > 1)
+        //{
+        //    api = new OpenAIAPI(new APIAuthentication(Constants.api_key));
+        //}
+        //else
+        //{
+        //    api = new OpenAIAPI(new APIAuthentication("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"));
+        //}
         api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
         StartConversation();
         okButton.onClick.AddListener(() => GetResponse());

@@ -69,8 +69,6 @@ public class GameStateManager : MonoBehaviour
             Dialog.SetActive(false);
             //characterController.enabled = true;
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
             Debug.Log("Switched to PLAY");
         }
         else if (stateNumber == GameState.GAME_STATE_DIALOGUE)

@@ -1,11 +1,7 @@
-using Cinemachine;
-using Invector.vCharacterController;
 using UnityEngine;
 
 public class GameStateManager : MonoBehaviour
 {
-    [SerializeField]
-    vThirdPersonInput characterController;
 
     [SerializeField]
     GameObject Dialog;
@@ -30,7 +26,6 @@ public class GameStateManager : MonoBehaviour
 
     void Start()
     {
-        characterController = FindObjectOfType<vThirdPersonInput>();
         //SwitchToState(currentGameState);
 
         Messenger.AddListener("DialogueFinished", () => {
@@ -72,7 +67,7 @@ public class GameStateManager : MonoBehaviour
             Time.timeScale = 1;
             pauseMenuObject.SetActive(false);
             Dialog.SetActive(false);
-            characterController.enabled = true;
+            //characterController.enabled = true;
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -82,8 +77,8 @@ public class GameStateManager : MonoBehaviour
         {
             Time.timeScale = 1;
             pauseMenuObject.SetActive(false);
-            characterController.StopWalking();
-            characterController.enabled = false;
+            //characterController.StopWalking();
+            //characterController.enabled = false;
             Dialog.SetActive(true);
             Cursor.lockState = CursorLockMode.Confined;
             Cursor.visible = true;
@@ -93,8 +88,8 @@ public class GameStateManager : MonoBehaviour
         {
             Time.timeScale = 0;
             pauseMenuObject.SetActive(true);
-            characterController.StopWalking();
-            characterController.enabled = false;
+            //characterController.StopWalking();
+            //characterController.enabled = false;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             Debug.Log("Switched to PAUSE");

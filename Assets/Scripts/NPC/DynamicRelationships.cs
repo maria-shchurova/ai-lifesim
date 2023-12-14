@@ -55,7 +55,7 @@ public class DynamicRelationships : MonoBehaviour
 
         var chatResult = await api.Chat.CreateChatCompletionAsync(new ChatRequest() //too many tokens??
         {
-            Model = Model.ChatGPTTurbo0613,
+            Model = Model.ChatGPTTurbo0301,
             Temperature = 0.5,
             MaxTokens = 1,
             Messages = messages

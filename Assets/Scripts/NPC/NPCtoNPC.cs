@@ -80,7 +80,7 @@ public class NPCtoNPC : MonoBehaviour
 
             var chatResult = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
             {
-                Model = Model.ChatGPTTurbo0613,
+                Model = Model.ChatGPTTurbo0301,
                 Temperature = 0.9,
                 MaxTokens = 50,
                 Messages = messages

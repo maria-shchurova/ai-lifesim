@@ -149,7 +149,7 @@ public class NPC_Persona : MonoBehaviour
 
         var chatResult = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
         {
-            Model = Model.ChatGPTTurbo0301,
+            Model = Model.GPT4,
             Temperature = 1,
             MaxTokens = 200,
             Messages = messages

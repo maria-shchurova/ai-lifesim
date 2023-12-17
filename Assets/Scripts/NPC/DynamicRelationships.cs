@@ -22,7 +22,7 @@ public class DynamicRelationships : MonoBehaviour
         }
         else
         {
-            api = new OpenAIAPI(new APIAuthentication("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"));
+            api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
             //StartCoroutine(GetKeyFromServer()); //pull from github
         }
         messages = new List<ChatMessage>();

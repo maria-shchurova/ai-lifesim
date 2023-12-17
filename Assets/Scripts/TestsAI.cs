@@ -25,7 +25,6 @@ public class TestsAI : MonoBehaviour
         }
         else
         {
-            api = new OpenAIAPI(new APIAuthentication("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"));
             //StartCoroutine(GetKeyFromServer()); //pull from github
         }
         StartConversation();

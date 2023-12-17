@@ -35,10 +35,9 @@ public class NPCtoNPC : MonoBehaviour
         }
         else
         {
-            api = new OpenAIAPI(new APIAuthentication("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"));
+            api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
         }
 
-        //api = new OpenAIAPI(Environment.GetEnvironmentVariable("OPENAI_API_KEY", EnvironmentVariableTarget.User));
         messages = new List<ChatMessage>();
 
         StartConversation();

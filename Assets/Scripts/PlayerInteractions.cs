@@ -61,11 +61,14 @@ public class PlayerInteractions : MonoBehaviour
                     hit.collider.gameObject.GetComponent<NPC_Persona>().StartDialog();
                 }
             }
+            else
+            {
+                TalkHint.SetActive(false);
+            }
         }
         else
         {
             //Debug.DrawRay(RaySource.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.red);
-            TalkHint.SetActive(false);
             DoorHint.SetActive(false);
             return;
         }

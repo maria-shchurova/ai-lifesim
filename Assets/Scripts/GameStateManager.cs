@@ -1,7 +1,10 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System;
 
 public class GameStateManager : MonoBehaviour
 {
+    List<NPC_Persona> NPC_OnScene;
 
     [SerializeField]
     GameObject Dialog;
@@ -26,18 +29,25 @@ public class GameStateManager : MonoBehaviour
 
     void Start()
     {
-        //SwitchToState(currentGameState);
+        NPC_OnScene = new List<NPC_Persona>();
+        foreach (var npc in FindObjectsOfType<NPC_Persona>())
+        {
+            NPC_OnScene.Add(npc);
+        }
 
         Messenger.AddListener("DialogueFinished", () => {
             SwitchToState(GameState.GAME_STATE_PLAY);
+            foreach (NPC_Persona npc in NPC_OnScene)
+            {
+                npc.enabled = true;
+            }
         });
 
         Messenger.AddListener("ResumeGame", () => {
             SwitchToState(GameState.GAME_STATE_PLAY);
         });
 
-
-        Messenger.AddListener("DialogueStarted", () => {
+        Messenger.AddListener("DialogueMode", () => {
             SwitchToState(GameState.GAME_STATE_DIALOGUE);
         });
 
@@ -93,4 +103,6 @@ public class GameStateManager : MonoBehaviour
             Debug.Log("Switched to PAUSE");
         }
     }
+
+
 }

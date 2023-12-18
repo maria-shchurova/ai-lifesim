@@ -1426,7 +1426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d45a3fb04e723a744b69d524320ca51c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Alice
+  NPCname: Alice
   startingString: ...
   codeName: Alice666
 --- !u!114 &7956023008739734040
@@ -1445,10 +1445,9 @@ MonoBehaviour:
   inputField: {fileID: 0}
   gettingResponse: 0
   EndConversation: {fileID: 0}
-  WhereAreWe: 
+  WhereAreWe: empty place
   CharacterNames: []
   MyName: Alice
-  DR: {fileID: 768789538085672154}
 --- !u!114 &1993380190703486568
 MonoBehaviour:
   m_ObjectHideFlags: 0

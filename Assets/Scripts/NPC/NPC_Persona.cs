@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class NPC_Persona : MonoBehaviour
 {
@@ -31,7 +32,9 @@ public class NPC_Persona : MonoBehaviour
     public List<string> CharacterNames; //Alice, Kathie, MainCharacter, Bob, etc. include different versions of the name
     public string MyName;
 
-    public DynamicRelationships DR;
+    public bool isTalking;
+
+    //public DynamicRelationships DR;
 
     string PlayerName;
 
@@ -81,7 +84,7 @@ public class NPC_Persona : MonoBehaviour
 
     public void StartDialog()
     {
-        Messenger.Broadcast("DialogueStarted");
+        Messenger.Broadcast("DialogueMode");
         StartConversation();
         EndConversation.onClick.AddListener(() => FinishConversation());
     }
@@ -91,13 +94,20 @@ public class NPC_Persona : MonoBehaviour
     {
         if (Keyboard.current.enterKey.wasPressedThisFrame && !gettingResponse)
         {
-            gettingResponse = true;
-            GetResponse();
+            if (inputField == null || inputField.text.Length < 1)
+            {
+                gettingResponse = false;
+                return;
+            }
+
+            StartCoroutine(GetResponseCoroutine());
         }
 
     }
     private void StartConversation()
     {
+        isTalking = true;
+
         if (Constants.PlayerName != "")
         {
             PlayerName = Constants.PlayerName;
@@ -124,18 +134,14 @@ public class NPC_Persona : MonoBehaviour
         }
 
         messages.Add(new ChatMessage(ChatMessageRole.System, "if asked about what is the place you are at, it's " + WhereAreWe));
-        messages.Add(new ChatMessage(ChatMessageRole.System, "your feelings/attitude towards your conversation partner on the scale from -10 to 10 where -10 is absolute hate and 10 is absolute love stands at " + DR.LoadAttitude()));
+       // messages.Add(new ChatMessage(ChatMessageRole.System, "your feelings/attitude towards your conversation partner on the scale from -10 to 10 where -10 is absolute hate and 10 is absolute love stands at " + DR.LoadAttitude()));
 
         textField.text = historyKeeper.startingString;
     }
 
-    private async void GetResponse()
+    private IEnumerator GetResponseCoroutine()
     {
-        if (inputField == null || inputField.text.Length < 1)
-        {
-            gettingResponse = false;
-            return;
-        }
+        gettingResponse = true;
 
         ChatMessage userMessage = new ChatMessage();
         userMessage.Role = ChatMessageRole.User;
@@ -147,37 +153,49 @@ public class NPC_Persona : MonoBehaviour
         messages.Add(userMessage);
         inputField.text = "";
 
-        var chatResult = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
+        TaskCompletionSource<ChatResult> taskCompletionSource = new TaskCompletionSource<ChatResult>();
+
+        Task.Run(async () =>
         {
-            Model = Model.GPT4,
-            Temperature = 1,
-            MaxTokens = 200,
-            Messages = messages
+            var chatResult = await api.Chat.CreateChatCompletionAsync(new ChatRequest()
+            {
+                Model = Model.GPT4,
+                Temperature = 1,
+                MaxTokens = 200,
+                Messages = messages
+            });
+
+            taskCompletionSource.SetResult(chatResult);
         });
 
+        while (!taskCompletionSource.Task.IsCompleted)
+        {
+            yield return null;
+        }
+
         ChatMessage responseMessage = new ChatMessage();
-        responseMessage.Role = chatResult.Choices[0].Message.Role;
-        responseMessage.Content = chatResult.Choices[0].Message.Content;
+        responseMessage.Role = taskCompletionSource.Task.Result.Choices[0].Message.Role;
+        responseMessage.Content = taskCompletionSource.Task.Result.Choices[0].Message.Content;
         responseMessage.Name = MyName;
 
         messages.Add(responseMessage);
 
-        textField.text = responseMessage.Content;
-
-        
+        textField.text = responseMessage.Content;        
 
         gettingResponse = false;
     }
 
     private void FinishConversation()
     {
+        isTalking = false;
+
         EndConversation.onClick.RemoveAllListeners();
 
         Debug.Log("finish clicked");
         historyKeeper.SaveChatMessages(messages); //TODO instead of rewriting, add 
         Messenger.Broadcast("DialogueFinished");
         gettingResponse = false;
-        DR.EvaluateConversationImpact();
+       // DR.EvaluateConversationImpact();
     }
 
     IEnumerator GetKeyFromServer()

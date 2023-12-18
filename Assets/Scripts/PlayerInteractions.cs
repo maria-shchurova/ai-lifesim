@@ -54,7 +54,7 @@ public class PlayerInteractions : MonoBehaviour
                 TalkHint.SetActive(true);
                 currentConversation = hit.collider.gameObject;
 
-                if (Input.GetKeyDown(KeyCode.Mouse0) && hit.collider.gameObject.GetComponent<NPC>().isTalking == false)
+                if (Input.GetKeyDown(KeyCode.Mouse0) && hit.collider.gameObject.GetComponent<NPC_Persona>().isTalking == false)
                 {
                     currentConversation = hit.collider.gameObject;
                     TakeTalkPosition(hit.collider.transform);

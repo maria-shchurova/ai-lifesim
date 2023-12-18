@@ -9,7 +9,7 @@ using OpenAI_API.Chat;
 public class NPCMemory : MonoBehaviour
 {
     [SerializeField]
-    string name;
+    string NPCname;
     [SerializeField]
     public string startingString;
     [SerializeField]
@@ -19,7 +19,7 @@ public class NPCMemory : MonoBehaviour
 
     public string Name
     {
-        get { return name; }
+        get { return NPCname; }
     }
 
     private void Start()

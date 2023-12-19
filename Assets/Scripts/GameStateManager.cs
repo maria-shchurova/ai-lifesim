@@ -51,6 +51,8 @@ public class GameStateManager : MonoBehaviour
             SwitchToState(GameState.GAME_STATE_DIALOGUE);
         });
 
+        Messenger.AddListener<NPC_Persona>("DialogueStarted", DisableInactiveNPCs);
+
         Messenger.AddListener("Pause", () => {
             SwitchToState(GameState.GAME_STATE_PAUSE);
         });
@@ -104,5 +106,14 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-
+    void DisableInactiveNPCs(NPC_Persona activeNPC)
+    {
+        foreach (NPC_Persona npc in NPC_OnScene)
+        {
+            if (npc != activeNPC)
+            {
+                npc.enabled = false;
+            }
+        }
+    }
 }

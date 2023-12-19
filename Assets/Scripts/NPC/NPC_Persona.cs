@@ -85,6 +85,7 @@ public class NPC_Persona : MonoBehaviour
     public void StartDialog()
     {
         Messenger.Broadcast("DialogueMode");
+        Messenger.Broadcast("DialogueStarted", this);
         StartConversation();
         EndConversation.onClick.AddListener(() => FinishConversation());
     }

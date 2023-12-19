@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.AI;
+using static GameStateManager;
 
 public class ClickToMove : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class ClickToMove : MonoBehaviour
     Animator animator;
 
     bool walking;
+    bool talking;
+
+    Transform lastTalkingTarget = null;
+
     [SerializeField] float stoppingDistance;
     [SerializeField] float speed;
     void Start()
@@ -18,6 +23,10 @@ public class ClickToMove : MonoBehaviour
         animator = GetComponent<Animator>();
 
         agent.speed = speed;
+
+        Messenger.AddListener("DialogueFinished", () => {
+            talking = false;
+        });
     }
 
     // Update is called once per frame
@@ -26,29 +35,33 @@ public class ClickToMove : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if(Input.GetMouseButton(0))
+        animator.SetBool("Walk", walking);
+        walking = !(agent.remainingDistance <= stoppingDistance);
+
+        if (talking)
         {
-            if (Physics.Raycast(ray, out hit, 100))
+            if (agent.remainingDistance <= stoppingDistance)
             {
-                if(hit.collider.CompareTag("Floor"))
-                {
-                    if (EventSystem.current.IsPointerOverGameObject())
-                        return;
-                    else
-                        SetDestination(hit.point);
-                }
+                TakeTalkRotation();
             }
-        }
-        if(agent.remainingDistance <= stoppingDistance)
-        {
-            walking = false;
         }
         else
         {
-            walking = true;
+            if (Input.GetMouseButton(0))
+            {
+                if (Physics.Raycast(ray, out hit, 100))
+                {
+                    if (hit.collider.CompareTag("Floor"))
+                    {
+                        if (EventSystem.current.IsPointerOverGameObject())
+                            return;
+                        else
+                            SetDestination(hit.point);
+                    }
+                }
+            }
         }
 
-        animator.SetBool("Walk", walking);
     }
 
     public void SetDestination(Vector3 target)
@@ -63,5 +76,28 @@ public class ClickToMove : MonoBehaviour
     public void ReleaseAgent()
     {
         agent.isStopped = false;
+    }
+
+    public void TakeTalkPosition(Transform talker)
+    {
+        Vector3 targetPosition = talker.position;
+        Quaternion targetRotation = talker.rotation;
+
+        // Calculate the forward vector based on the target object's rotation
+        Vector3 forwardVector = targetRotation * Vector3.forward;
+
+        // Calculate the new position in front of the target object
+        Vector3 newPosition = targetPosition + forwardVector * 1.3f;
+
+        Debug.DrawRay(talker.position, newPosition, Color.red);
+        SetDestination(newPosition);
+
+        lastTalkingTarget = talker;
+        talking = true;
+    }
+
+    void TakeTalkRotation()
+    {
+        transform.LookAt(new Vector3(lastTalkingTarget.position.x, transform.position.y, lastTalkingTarget.position.z));
     }
 }

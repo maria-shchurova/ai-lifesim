@@ -57,7 +57,7 @@ public class PlayerInteractions : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Mouse0) && hit.collider.gameObject.GetComponent<NPC_Persona>().isTalking == false)
                 {
                     currentConversation = hit.collider.gameObject;
-                    TakeTalkPosition(hit.collider.transform);
+                    movementController.TakeTalkPosition(hit.collider.transform);
                     hit.collider.gameObject.GetComponent<NPC_Persona>().StartDialog();
                 }
             }
@@ -73,21 +73,6 @@ public class PlayerInteractions : MonoBehaviour
             return;
         }
 
-    }
-
-    void TakeTalkPosition(Transform talker)
-    {
-        Vector3 targetPosition = talker.position;
-        Quaternion targetRotation = talker.rotation;
-
-        // Calculate the forward vector based on the target object's rotation
-        Vector3 forwardVector = targetRotation * Vector3.forward;
-
-        // Calculate the new position in front of the target object
-        Vector3 newPosition = targetPosition + forwardVector * 1.3f;
-
-        Debug.DrawRay(talker.position, newPosition, Color.red);
-        movementController.SetDestination(newPosition);
     }
     
 }
